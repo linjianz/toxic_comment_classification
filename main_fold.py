@@ -39,6 +39,7 @@ def get_parser():
     parser.add_argument('--gpu',            default='0', help='GPU id list')
     parser.add_argument('--workers',        default=4, type=int, help='Workers number')
     parser.add_argument('--fold_count',     default=10, type=int, help='Fold count')
+    parser.add_argument('--coefficient',    default=1.4, type=float, help='normalize coefficient')
 
     return parser.parse_args()
 
@@ -168,7 +169,7 @@ def main(args):
         predicts_ret *= predicts_fold
 
     predicts_ret **= (1. / len(predicts_list))
-    predicts_ret **= 1.4
+    predicts_ret **= args.coefficient
 
     ret = pd.DataFrame(data=predicts_ret, columns=data_set.CLASSES)
     ret['id'] = data_set.test_id
