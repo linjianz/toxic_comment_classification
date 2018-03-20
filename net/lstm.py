@@ -51,6 +51,12 @@ class Net(nn.Module):
                             batch_first=True,
                             dropout=0.5,
                             bidirectional=True)
+        self.gru = nn.GRU(input_size=in_features,
+                          hidden_size=hidden_size,
+                          num_layers=layer_num,
+                          batch_first=True,
+                          dropout=0.5,
+                          bidirectional=True)
         self.fc1 = fc(hidden_size*2, 32, activation='relu')
         self.fc2 = fc(32, 6)
         self.sigmoid = nn.Sigmoid()
@@ -66,8 +72,9 @@ class Net(nn.Module):
 
     def forward(self, x):
         N, T, D1 = tuple(x.size())
-        x = self.dropout(x)
-        x, _ = self.lstm(x)                 # N x T x D2
+        # x = self.dropout(x)
+        # x, _ = self.lstm(x)                 # N x T x D2
+        x, _ = self.gru(x)                  # N x T x D2
         x = x[:, -1, :]                     # N x 1 x D2 (last time step)
         x = x.view(N, -1)                   # N x D2
         x = self.fc1(x)
